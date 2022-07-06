@@ -48,7 +48,7 @@ describe('First test suite', () => {
         cy.get('[id$=Email1]')
     })
 
-    it.only('finding web elements', () => {
+    it('finding web elements', () => {
         cy.contains('Forms').click()
         cy.contains('Form Layouts').click()
 
@@ -84,6 +84,90 @@ describe('First test suite', () => {
         // prev() - previous element siblings
         // eq() - find by index
         // not() - exclude some element from the list
+    })
+
+    it('working with the subject of the command', () => {
+        cy.contains('Forms').click()
+        cy.contains('Form Layouts').click()
+
+        cy.contains('nb-card','Using the Grid').find('[for="inputEmail1"]').should('contain', 'Email')
+        cy.contains('nb-card','Using the Grid').find('[for="inputPassword2"]').should('contain', 'Password')
+        cy.contains('nb-card','Basic form').find('[for="exampleInputEmail1"]').should('contain', 'Email address')
+        cy.contains('nb-card','Basic form').find('[for="exampleInputPassword1"]').should('contain', 'Password')
+
+        // const firstForm = cy.contains('nb-card','Using the Grid')
+        // const secondForm = cy.contains('nb-card','Basic form')
+        // firstForm.find('[for="inputEmail1"]').should('contain', 'Email')
+        // firstForm.find('[for="inputPassword2"]').should('contain', 'Password')
+        // secondForm.find('[for="exampleInputEmail1"]').should('contain', 'Email address')
+        // secondForm.find('[for="exampleInputPassword1"]').should('contain', 'Password')
+
+        // Cypress way of doing things
+        cy.contains('nb-card','Using the Grid').then( firstForm => {
+            const emailLabel1 = firstForm.find('[for="inputEmail1"]').text()
+            const passwordLabelFirst = firstForm.find('[for="inputPassword2"]').text()
+            expect(emailLabel1).to.equal('Email')
+            expect(passwordLabelFirst).to.equal('Password')
+
+            cy.contains('nb-card','Basic form').then( secondForm => {
+                const secondPasswordText = secondForm.find('[for="exampleInputPassword1"]').text()
+                expect(secondPasswordText).to.equal(passwordLabelFirst)
+                cy.wrap(secondForm).find('[for="exampleInputPassword1"]').should('contain', 'Password')
+                cy.wrap(secondPasswordText).as('SecondPassword')
+            })
+        })
+
+        cy.get('@SecondPassword').should('contain', 'Password')
+    })
+
+    it('invoke command', () => {
+        cy.contains('Forms').click()
+        cy.contains('Form Layouts').click()
+
+        //1
+        cy.get('[for="exampleInputEmail1"]').should('contain', 'Email').should('have.class', 'label')
+
+        //2
+        cy.get('[for="exampleInputEmail1"]').then( label => {
+            expect(label.text()).to.equal('Email address')
+            expect(label).to.have.class('label')
+        })
+
+        //3
+        cy.get('[for="exampleInputEmail1"]').invoke('text').then( myText => {
+            expect(myText).to.equal('Email address')
+        })
+
+        // cy.contains('nb-card','Basic form')
+        //     .find('nb-checkbox')
+        //     .click()
+        //     .find('.custom-checkbox')
+        //     .invoke('attr', 'class')
+        //     .should('contain', 'checked')
+        //     .then( myValue => {
+        //         expect(myValue).to.contains('checked')
+        //     })
+
+        cy.contains('nb-card','Basic form').find('nb-checkbox').then( myBox => {
+            cy.wrap(myBox).find('.custom-checkbox').invoke('attr', 'class').then( myAttribute => {
+                if(myAttribute.includes('checked')){
+                    cy.wrap(myBox).click()
+                }
+             })
+        })
+    })
+
+    it.only('invoke property', () => {
+        cy.contains('Forms').click()
+        cy.contains('Datepicker').click()
+
+        cy.contains('nb-card', 'Common Datepicker').find('input').then( input => {
+            cy.wrap(input).click()
+            cy.get('nb-calendar-picker').contains('20').click()
+            cy.wrap(input).invoke('prop', 'value').should('contain', 'Jul 20, 2022')
+            cy.wrap(input).should('have.value', 'Jul 20, 2022')
+        })
+
     })
 
 })
