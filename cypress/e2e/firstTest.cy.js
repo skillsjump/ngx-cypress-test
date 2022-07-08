@@ -157,7 +157,7 @@ describe('First test suite', () => {
         })
     })
 
-    it.only('invoke property', () => {
+    it('invoke property', () => {
         cy.contains('Forms').click()
         cy.contains('Datepicker').click()
 
@@ -168,6 +168,51 @@ describe('First test suite', () => {
             cy.wrap(input).should('have.value', 'Jul 20, 2022')
         })
 
+    })
+
+    it('trigger', () => {
+        cy.contains('Modal & Overlays').click()
+        cy.contains('Popover').click()
+
+        cy.contains('nb-card', 'Popover Position').find('[nbpopoverplacement="right"]').trigger('mouseenter')
+
+    })
+
+    it('checkboxes', () => {
+        cy.contains('Modal & Overlays').click()
+        cy.contains('Toastr').click()
+
+        //cy.get('[type="checkbox"]').uncheck({force:true})
+        cy.get('[type="checkbox"]').first().check({force:true})
+    })
+
+    it('radio buttons', () => {
+        cy.contains('Forms').click()
+        cy.contains('Form Layouts').click()
+
+        cy.contains('nb-card','Using the Grid').find('[type="radio"]').first().check({force: true})
+    })
+
+    it.only('drop downs', () => {
+
+        cy.get('nav nb-select').click()
+        cy.get('.options-list').contains('Dark').click()
+        cy.get('nav nb-select').should('contain', 'Dark')
+        
+        cy.get('nav nb-select').then( dropDownBox => {
+            cy.wrap(dropDownBox).click()
+            cy.get('.options-list nb-option').each( (listItem, index, listOfElements) => {
+                const listItemText = listItem.text()
+
+                cy.wrap(listItem).click()
+                cy.wrap(dropDownBox).should('contain', listItemText)
+
+                if(index !== listOfElements.length-1){
+                    cy.wrap(dropDownBox).click()
+                }
+            })
+        })
+        
     })
 
 })
