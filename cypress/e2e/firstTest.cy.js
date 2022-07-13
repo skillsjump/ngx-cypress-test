@@ -193,7 +193,7 @@ describe('First test suite', () => {
         cy.contains('nb-card','Using the Grid').find('[type="radio"]').first().check({force: true})
     })
 
-    it.only('drop downs', () => {
+    it('drop downs', () => {
 
         cy.get('nav nb-select').click()
         cy.get('.options-list').contains('Dark').click()
@@ -213,6 +213,58 @@ describe('First test suite', () => {
             })
         })
         
+    })
+
+    it('web tables', () => {
+        cy.contains('Tables & Data').click()
+        cy.contains('Smart Table').click()
+
+        //1 update age
+        cy.get('tbody').contains('tr', 'Larry').then( tableRow => {
+            cy.wrap(tableRow).find('.nb-edit').click()
+            cy.wrap(tableRow).find('[placeholder="Age"]').clear().type('30')
+            cy.wrap(tableRow).find('.nb-checkmark').click()
+            cy.wrap(tableRow).find('td').should('contain', '30')
+        })
+
+        //2 within method
+        cy.get('tbody').contains('tr', 'Larry').within(() => {
+            cy.get('.nb-edit').click()
+            cy.get('[placeholder="Age"]').clear().type('30')
+            cy.get('.nb-checkmark').click()
+            cy.get('td').should('contain', '30')
+        })
+
+    })
+
+    it.only('datepicker', () => {
+        function selectDayFromCurrent(day){
+            let date = new Date()
+            date.setDate(date.getDate() + day) 
+            let futureDate = date.getDate()
+            let futureMonth = date.toLocaleDateString('en-US', {month: 'short'})
+            let dateToAssert = `${futureMonth} ${futureDate}, ${date.getFullYear()}`
+
+            cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then( dateAttributeValue => {
+                if(!dateAttributeValue.includes(futureMonth)){
+                    cy.get('[data-name="chevron-right"]').click()
+                    selectDayFromCurrent(day)
+                } else {
+                    cy.get('.day-cell').not('.bounding-month').contains(futureDate).click()
+                }
+            })
+            return dateToAssert
+        }
+
+
+        cy.contains('Forms').click()
+        cy.contains('Datepicker').click()
+
+        cy.contains('nb-card', 'Common Datepicker').find('input').then( input => {
+            cy.wrap(input).click()
+            var dateToAssert = selectDayFromCurrent(40)
+            cy.wrap(input).should('have.value', dateToAssert)
+        })
     })
 
 })
