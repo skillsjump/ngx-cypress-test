@@ -16,8 +16,5 @@ describe('Homework Test', () => {
         cy.contains('nb-card', 'Enter your name').find('input').type('Batman')
         cy.contains('Submit').click()
         cy.contains('nb-card', 'Names').find('.ng-star-inserted').should('have.text', 'NavinBatman')
-        // cy.get('.result-from-dialog > ul > :nth-child(2)')
     })
-// it('navigate to dialog page', () =>{
-//     cy.click('')
 })
