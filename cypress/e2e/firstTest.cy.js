@@ -1,9 +1,12 @@
 /// <reference types="cypress" />
 
+import { navigateTo } from "../support/page-objects/navigationPage"
+import { onTheSmartTablePage } from "../support/page-objects/smartTablePage"
+
 describe('First test suite', () => {
 
     beforeEach('open application', () => {
-        cy.visit('/')
+        cy.loginToApplication()
     })
 
     it('first test', () => {
@@ -228,12 +231,7 @@ describe('First test suite', () => {
         })
 
         //2 within method
-        cy.get('tbody').contains('tr', 'Larry').within(() => {
-            cy.get('.nb-edit').click()
-            cy.get('[placeholder="Age"]').clear().type('30')
-            cy.get('.nb-checkmark').click()
-            cy.get('td').should('contain', '30')
-        })
+        onTheSmartTablePage.updateAndValidateAgeByFirstName('Larry', '50')
 
     })
 
