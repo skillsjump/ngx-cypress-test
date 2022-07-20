@@ -5,12 +5,12 @@ describe('work with apis', () => {
     it('work with tags', () => {
         // cy.intercept('GET', 'https://api.realworld.io/api/tags', {fixture: 'tags.json'})
         cy.intercept({method: 'Get', path: 'tags'}, {fixture: 'tags.json'})
-        cy.visit('/')
+        cy.loginToApplication()
     })
 
     it('verify api response', () => {
         cy.intercept('GET', 'https://api.realworld.io/api/tags').as('getTags')
-        cy.visit('/')
+        cy.loginToApplication()
         cy.wait('@getTags').then( myResponseTags => {
             const secondTag = myResponseTags.response.body.tags[1]
             expect(secondTag).to.equal('welcome')
@@ -19,7 +19,7 @@ describe('work with apis', () => {
 
     it.only('create and delete article', () => {
         cy.intercept('https://api.realworld.io/api/users/login').as('getToken')
-        cy.visit('/')
+        cy.loginToApplication()
         cy.contains('Sign in').click()
         cy.get('[placeholder="Email"]').type('beauty123@test.com')
         cy.get('[placeholder="Password"]').type('Welcome1')
