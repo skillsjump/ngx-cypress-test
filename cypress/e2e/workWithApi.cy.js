@@ -18,22 +18,22 @@ describe('work with apis', () => {
     })
 
     it.only('create and delete article', () => {
-        cy.intercept('https://api.realworld.io/api/users/login').as('getToken')
+        // cy.intercept('https://api.realworld.io/api/users/login').as('getToken')
         cy.loginToApplication()
-        cy.contains('Sign in').click()
-        cy.get('[placeholder="Email"]').type('beauty123@test.com')
-        cy.get('[placeholder="Password"]').type('Welcome1')
-        cy.get('[type="submit"]').click()
+        // cy.contains('Sign in').click()
+        // cy.get('[placeholder="Email"]').type('beauty123@test.com')
+        // cy.get('[placeholder="Password"]').type('Welcome1')
+        // cy.get('[type="submit"]').click()
 
-        cy.wait('@getToken').then( tokenResponse => {
-            const token = tokenResponse.response.body.user.token
-            cy.wrap(token).as('myToken')
-        })
+        // cy.wait('@getToken').then( tokenResponse => {
+        //     const token = tokenResponse.response.body.user.token
+        //     cy.wrap(token).as('myToken')
+        // })
 
         cy.fixture('newArticle.json').then(articleRequestBody => {
             cy.get('@myToken').then( myToken => {
                 cy.request({
-                    url: 'https://api.realworld.io/api/articles/',
+                    url: `${Cypress.env('apiUrl')}articles/`,
                     headers: {'Authorization': 'Token ' + myToken},
                     method: 'POST',
                     body: articleRequestBody
@@ -44,7 +44,7 @@ describe('work with apis', () => {
         cy.contains('Global Feed').click()
         cy.contains('Test title 2').click()
         cy.contains('Delete Article').eq(0).click()
-        cy.intercept('https://api.realworld.io/api/articles?limit=10&offset=0').as('globalFeed')
+        cy.intercept(`${Cypress.env('apiUrl')}articles?limit=10&offset=0`).as('globalFeed')
         cy.contains('Global Feed').click()
         cy.wait('@globalFeed')
         cy.get('app-article-list').should('not.contain', 'Test title 2')

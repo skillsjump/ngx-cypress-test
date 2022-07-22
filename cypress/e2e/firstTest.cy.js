@@ -134,6 +134,7 @@ describe('First test suite', () => {
         cy.get('[for="exampleInputEmail1"]').then( label => {
             expect(label.text()).to.equal('Email address')
             expect(label).to.have.class('label')
+            cy.wrap(label).should('have.class', 'label')
         })
 
         //3
@@ -169,6 +170,8 @@ describe('First test suite', () => {
             cy.get('nb-calendar-picker').contains('20').click()
             cy.wrap(input).invoke('prop', 'value').should('contain', 'Jul 20, 2022')
             cy.wrap(input).should('have.value', 'Jul 20, 2022')
+            cy.wrap(input).should('have.prop', 'value', 'Jul 20, 2022')
+            expect(input).to.have.prop('value', 'Jul 20, 2022')
         })
 
     })
